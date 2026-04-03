@@ -1,101 +1,119 @@
-<p style="border:1px; border-style:solid; border-color:black; padding: 1em;">
-CS-UH 3260 Software Analytics<br/>
-Replication Study Guidelines<br/>
-Dr. Sarah Nadi, NYUAD
-</p>
+## 1. Project Title and Overview
 
-# Replication Repository README Template -- CS-UH-3260 Software Analytics
-
-
-## Overview
-
-This repo provides a template and and guidelines for creating a README file for your replication study repository. The README serves as the primary documentation for your repository and helps evaluators understand your work, navigate your repository structure, and reproduce your replication. You can create a repo based on this template and modify the README and content as needed.
-
-
-## README Structure Template
-
-Your repository README should include the following sections:
-
-### 1. Project Title and Overview
-
-- **Paper Title**: [Full title of the replicated paper]
-- **Authors**: [Original paper authors]
-- **Replication Team**: [Your team members' names]
+- **Paper Title**: *An Empirical Evaluation of Using Large Language Models for Automated Unit Test Generation*
+- **Authors**: Max Schäfer, Sarah Nadi, Aryaz Eghbali, Frank Tip
 - **Course**: CS-UH 3260 Software Analytics, NYUAD
-- **Brief Description**: 
-  - 2-3 sentences summarizing what the original paper is about
-  - 2-3 sentences summarizing what this replication study does
+- **Brief description (paper)**: The paper evaluates TestPilot, an LLM-based unit test generator for JavaScript, on 25 npm packages, measuring coverage, failures, similarity, and the impact of prompt refiners across multiple LLMs.
+- **Brief description (this replication)**: We (a) sanity-checked the shared output format on one package, (b) re-ran TestPilot using `gpt-4o-mini` and processed outputs with the existing artifact scripts, and (c) selected 5 packages, identified their latest versions, re-ran RQ1-related data collection on latest versions, and compared against the artifact-pinned versions.
 
-### 2. Repository Structure
+## 2. Repository Structure (replication folder)
 
-Document your repository structure clearly. Organize your repository using the following standard structure:
+This README documents the replication work artifacts under `SoftwareAnalytics-ReplicationStudy-SoftwareTesting/`.
 
 ```
-README                    # Documentation for your repository
-datasets/                 # Subset of data you used (if any). If you used the whole dataset, include instructions on how to download it
-replication_scripts/      # Scripts used in your replication:
-                          #   - If you used scripts as-is: document which scripts you ran
-                          #   - If you modified scripts: include the modified scripts
-                          #   - If you created new scripts: include all new scripts
-outputs/                  # Your generated results only
-logs/                     # Console output, errors, screenshots
-notes/                    # Optional if you have any notes you took during reproduction (E.g., where you noted discrepencies etc)
+SoftwareAnalytics-ReplicationStudy-SoftwareTesting/
+  README.md                         # This file (replication instructions + overview)
+  notes/
+    1. Output analysis.md           # Scope item 1 writeup (pass/fail test + diagnosis)
+    3. Latest versions (RQ1).md     # Scope item 3 writeup scaffold + commands
+  replication_scripts/
+    run-gpt4omini-rq1-3-wsl.sh      # Run pinned packages
+    run-rq1-latest-5-wsl.sh         # Run 5 packages at latest npm versions
+    README.md                       # More info regarding the scripts
+  datasets/                          
+    README.md                       # Links to original datasets
+  logs/
+    average_run.png                 # Average runner logs under usual behavior
+    failed_repo.png                 # Example of build errors that is the cause behind not having some of the repos replicated
+    timeout_errors.png              # One of the most frequent reasons the tests are failed - timeouts in testing
+    README.md                       # Clarification behind errors, possible solutions and why they were (not) fixed
+  outputs/
+    gpt4omini_run3.7z               # Outputs after running all the original repos via the runner
+    gpt4omini_run3_latest5.zip      # Outputs after running 5 repos using latest npm versions
 ```
 
-**For each folder and file, provide a brief description of what it contains.**
+**Important**: the primary outputs are generated in the repo root under `outputs/` (not duplicated here), per project conventions.
 
-### 3. Setup Instructions
+## 3. Setup Instructions
 
-- **Prerequisites**: Required software, tools, and versions
-  - OS requirements
-  - Programming language versions (Python, R, etc.)
-  - Required packages/libraries and versions
-  - Any other dependencies
-- **Installation Steps**: Step-by-step instructions to set up the environment
-  - How to install dependencies
-  - How to configure paths or settings
-  - Any environment variables needed
+### Prerequisites
 
-### 4. GenAI Usage
+- **WSL (Linux)** recommended for running the reproduction runner scripts end-to-end.
+- **Node.js** and **npm**, versions vary by deps, we have used Node 20 LTS.
+- **Git**
 
-**GenAI Usage**: Briefly document any use of generative AI tools (e.g., ChatGPT, GitHub Copilot, Cursor) during the replication process. Include:
+### Environment variables (LLM access)
 
-  - Which tools were used
-  - How they were used (e.g., understanding scripts, exploring datasets, understanding data fields, debugging)
-  - Brief description of the assistance provided
+For live generation, TestPilot expects:
 
+- `TESTPILOT_LLM_API_ENDPOINT`
+- `TESTPILOT_LLM_AUTH_HEADERS` (must be valid JSON)
+- `TESTPILOT_LLM_API_KIND=chat` (for chat-completions)
+- `TESTPILOT_LLM_MODEL=gpt-4o-mini`
 
-## Grading Criteria for README
+The support for .env was added, so you might use dotenv and .env.example. Place it in the root of the `testpilot` repository
 
-Your README will be evaluated based on the following aspects (Total: 40 points):
+### Build TestPilot (once)
 
-### 1. Completeness (10 points)
-- [ ] All required sections are present
-- [ ] Each section contains sufficient detail
-- [ ] Repository structure is fully documented
-- [ ] All files and folders are explained
-- [ ] GenAI usage is documented (if any AI tools were used)
+From repo root (WSL):
 
-### 2. Clarity and Organization (5 points)
-- [ ] Information is well-organized and easy to follow
-- [ ] Instructions are clear and unambiguous
-- [ ] Professional writing and formatting
-- [ ] Proper use of markdown formatting (headers, code blocks, lists)
+```bash
+cd testpilot
+npm run build # Runs npm i, so no need for npm install
+```
 
-### 3. Setup and Reproducibility (10 points)
-- [ ] Setup instructions are complete and accurate, i.e., we were able to rerun the scripts following your instructions and obtain the results you reported
+## 4. Replication Steps (Scope items 1–3)
 
+### Understanding output format
 
-## Best Practices
+See `SoftwareAnalytics-ReplicationStudy-SoftwareTesting/notes/1. Output analysis.md`.
 
-1. **Be Specific**: Include exact versions, paths, and commands rather than vague descriptions
-2. **Keep It Updated**: Ensure the README reflects the current state of your repository
-3. **Test Your Instructions**: Have someone else (or yourself in a fresh environment) follow the setup instructions
-4. **Document AI Usage**: If you used any GenAI tools, be transparent about how they were used (e.g., understanding scripts, exploring datasets, understanding data fields)
+### Generation with `gpt-4o-mini`
 
+1) Run generation in WSL or linux shell:
 
-## Acknowledgement
+```bash
+./SoftwareAnalytics-ReplicationStudy-SoftwareTesting/replication_scripts/run-gpt4omini-rq1-3-wsl.sh <run_name>
+```
 
-This guideline was developed with the assistance of [Cursor](https://www.cursor.com/), an AI-powered code editor. This tool was used to:
+Outputs go to `outputs/runs/<run_name>/<package>/...`
 
-- Draft and refine this documentation iteratively
+2) Process outputs using the existing artifact scripts in `artifact/`.
+
+### Latest versions for 5 packages
+
+We selected the five packages with the fewest tests in `outputs/runs/gpt4omini_run3`:
+
+- `image-downloader`
+- `crawler-url-parser`
+- `countries-and-timezones`
+- `plural`
+- `jsonfile`
+
+Latest versions were obtained via `npm view <pkg> version` (Check out notes for more details).
+
+Run in WSL:
+
+```bash
+./SoftwareAnalytics-ReplicationStudy-SoftwareTesting/replication_scripts/run-rq1-latest-5-wsl.sh <run_name>
+```
+
+Notes and comparison scaffolding live in `SoftwareAnalytics-ReplicationStudy-SoftwareTesting/notes/3. Latest versions (RQ1).md`.
+
+## 5. Modified/Added Scripts and Code Changes:
+
+This replication required a small set of practical modifications to run TestPilot with modern `ChatCompletions` OpenAI API and to improve perofrmance a bit:
+
+- **Chat-completions support**: `testpilot/src/codex.ts` can post to chat-completions endpoints and read `choices[].message.content`.
+- **dotenv loading**: `.env` is loaded for benchmark runs.
+- **Prompt contract + parsing**: Improved `trimCompletion()` to handle 4o-mini specific quote blocks cases.
+- **Validator robustness**: we have adjusted validator timeouts to 60 seconds due to the WSL IO bounds - needed if your IO or CPU is slow to fit under the standard limit of 5 seconds; safer stderr handling - errors are now verbose, which simplifies debugging; parse Mocha JSON from stdout when a report file is not written.
+- **Generated test imports**: removed `require('mocha')` from generated tests templates - there are several problems related to that. It is not a good solution to the problem - in fact, it conflicts with `require('mocha')` in the code, as mocha CLI already runs those tests, sometimes `4o-mini` introduces this option themselves, provoking the CLI errors once again. Why it was not fixed? - fixing this behavior requires rewriting the test runner, which is out of the replication scope.
+
+## 6. GenAI Usage
+
+We used AI assistance (Cursor Composer model) to:
+
+- provide navigation in the hierarchy of the folders and find relevant code snippets (e.g., entrypoint of the program, where is the LLM API layer is, etc.)
+- draft and refine replication scripts (in particular, `run-rq1-latest-5-wsl.sh` and `run-gpt4omini-rq1-3-wsl.sh`), some proofreading regarding the notes you see in here (to ensure all changes and aspects are captured, and explanations of the errors are plausible).
+

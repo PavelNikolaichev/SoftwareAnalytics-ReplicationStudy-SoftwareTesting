@@ -8,3 +8,24 @@ Thus, we have decided to skip it, as fixing it would involve either overengineer
 
 There are also some timeouts errors from mocha: ![timeout_errors.png](./timeout_errors.png)
 These are complicated, as there is a tradeoff between increasing the time limit of mocha validator and <i>possibly</i> get a passing result, or spending much more time waiting for an incorrectly written test to not pass the testing.
+
+
+
+
+
+# Analysis scripts
+
+During execution of analysis scripts we encountered errors due to the fact that scipts were expecting fully complete data folders, all packages, etc. 
+
+While our replication of running TESTPILOT did not yield complete datasets. 
+
+Error in the 1_Error_Package.png is related to the following:
+generate_latex_macros.js has a hardcoded, unguarded lookup for js-sdsl:
+
+coverageStats["js-sdsl"].stmtCoverage
+That assumes js-sdsl exists in your current dataset. In latest_version_5/data, it does not, so coverageStats["js-sdsl"] is undefined, and Node throws the TypeError.
+
+
+Error in the 2_Error_empty_package_folder.png is related to a similar issue. 
+
+generate_latex_macros.js was accessing package folder, but there were no contents, which is why script broke

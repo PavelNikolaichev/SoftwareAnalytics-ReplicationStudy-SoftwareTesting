@@ -30,6 +30,11 @@ Extract files from the gpt4omini_run3.7z into the original_version_25/data/singl
 Extract files from the gpt4omini_run3_latest5.zip into the latest_version_5/data/single_run folder
 
 
+Create a folder "figures" in both folders. 
+1) inside of the original_version_25, create "figures" folder
+2) inside of the latest_version_5, create "figures" folder
+
+
 ## In each respective folder (original_version_25 and latest_version_5): 
 
 1) Create a virtual environment:
